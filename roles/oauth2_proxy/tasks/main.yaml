@@ -46,9 +46,8 @@
   notify:
     - restart oauth2_proxy
 
-- name: Enable and start oauth2_proxy
+- name: Enable service
   systemd:
     name: oauth2_proxy
-    state: started
     enabled: yes
     daemon_reload: yes

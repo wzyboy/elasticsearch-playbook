@@ -28,10 +28,9 @@
     regexp: '^server.basePath: '
     line: 'server.basePath: "/kibana"'
 
-- name: Enable and start services
+- name: Enable services
   systemd:
     name: "{{ item }}"
-    state: started
     enabed: yes
   with_items:
     - elasticsearch
