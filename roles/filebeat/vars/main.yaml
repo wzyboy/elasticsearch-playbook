@@ -1,0 +1,4 @@
+filebeat_version: "6.1.1"
+filebeat_deb_url: "https://artifacts.elastic.co/downloads/beats/filebeat/filebeat-{{ filebeat_version }}-amd64.deb"
+
+es_url: "http://localhost:9200/"

@@ -1,0 +1,19 @@
+- name: Install Filebeat
+  apt:
+    deb: "{{ filebeat_deb_url }}"
+
+- name: Enable Filebeat
+  systemd:
+    name: filebeat
+    enabled: yes
+
+- name: Render Filebeat configuration file
+  template:
+    src: filebeat.yml.j2
+    dest: /etc/filebeat/filebeat.yml
+  notify:
+    - restart filebeat
+
+- name: Check Filebeat configuration
+  command: /usr/share/filebeat/bin/filebeat -configtest -path.config /etc/filebeat
+  changed_when: False

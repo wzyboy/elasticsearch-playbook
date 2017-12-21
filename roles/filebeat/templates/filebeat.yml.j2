@@ -1,0 +1,62 @@
+# vim: ft=yaml:
+
+#================================ General ======================================
+
+#name: (hostname is used)
+
+#=========================== Filebeat prospectors =============================
+
+filebeat.prospectors:
+
+  - type: log
+    paths:
+      - /var/log/messages
+    fields:
+      type: system.syslog
+
+  - type: log
+    paths:
+      - /var/log/auth
+    fields:
+      type: system.auth
+
+  - type: log
+    paths:
+      - /var/log/nginx/access.log
+      - /var/log/nginx/*.access.log
+    fields:
+      type: nginx.access
+
+  - type: log
+    paths:
+      - /var/log/nginx/error.log
+    fields:
+      type: nginx.error
+
+#================================ Processors ===================================
+
+processors:
+  - add_cloud_metadata:
+
+#============================== Template =====================================
+
+setup.template.enabled: false
+
+#================================ Outputs =====================================
+
+output.elasticsearch:
+
+  hosts: ["{{ es_url }}"]
+  pipelines:
+    - pipeline: nginx.access
+      when.equals:
+        fields.type: nginx.access
+    - pipeline: nginx.error
+      when.equals:
+        fields.type: nginx.error
+    - pipeline: system.syslog
+      when.equals:
+        fields.type: system.syslog
+    - pipeline: system.auth
+      when.equals:
+        fields.type: system.auth

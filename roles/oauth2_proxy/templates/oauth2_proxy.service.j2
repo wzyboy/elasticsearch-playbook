@@ -1,0 +1,16 @@
+[Unit]
+Description=oauth2_proxy
+After=network.target
+
+[Service]
+User={{ o2p_user }}
+Group={{ o2p_group }}
+
+ExecStart={{ o2p_bin }} -config={{ o2p_config }}
+ExecReload=/bin/kill -HUP $MAINPID
+
+KillMode=process
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

@@ -1,0 +1,54 @@
+- name: Download oauth2_proxy tarball
+  get_url:
+    url: "{{ o2p_tarball_url }}"
+    dest: /usr/local/src/oauth2_proxy.tar.gz
+    checksum: "{{ o2p_tarball_checksum }}"
+
+- name: Make extracted dir
+  file:
+    path: /usr/local/src/oauth2_proxy
+    state: directory
+
+- name: Unarchive oauth2_proxy tarball
+  unarchive:
+    src: /usr/local/src/oauth2_proxy.tar.gz
+    dest: /usr/local/src/oauth2_proxy
+    extra_opts: "--strip-component=1"
+    remote_src: yes
+
+- name: Install oauth2_proxy binary
+  copy:
+    src: /usr/local/src/oauth2_proxy/oauth2_proxy
+    dest: "{{ o2p_bin }}"
+    remote_src: yes
+    mode: 0755
+  notify:
+    - restart oauth2_proxy
+
+- name: Render oauth2_proxy config
+  template:
+    src: oauth2_proxy.cfg.j2
+    dest: "{{ o2p_config }}"
+  notify:
+    - restart oauth2_proxy
+
+- name: Render allow list
+  template:
+    src: oauth2_proxy.allow.j2
+    dest: "/etc/oauth2_proxy.allow"
+  notify:
+    - restart oauth2_proxy
+
+- name: Render oauth2_proxy systemd unit
+  template:
+    src: oauth2_proxy.service.j2
+    dest: /etc/systemd/system/oauth2_proxy.service
+  notify:
+    - restart oauth2_proxy
+
+- name: Enable and start oauth2_proxy
+  systemd:
+    name: oauth2_proxy
+    state: started
+    enabled: yes
+    daemon_reload: yes

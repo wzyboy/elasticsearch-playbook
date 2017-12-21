@@ -1,0 +1,10 @@
+# The upstream does not matter if we use nginx auth_request module
+upstreams = ["http://localhost/"]
+
+client_id = ""
+client_secret = ""
+
+# Generate with: python -c 'import os, base64; print(base64.urlsafe_b64encode(os.urandom(16)))'
+cookie_secret = ""
+
+authenticated_emails_file = "/etc/oauth2_proxy.allow"

@@ -1,0 +1,38 @@
+- name: Install Elasticsearch
+  apt:
+    deb: "{{ es_deb_url }}"
+
+- name: Install Kibana
+  apt:
+    deb: "{{ kibana_deb_url }}"
+
+- name: Install JRE
+  apt:
+    name: openjdk-8-jre-headless
+
+- name: Adjust JVM min heap size
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: "^-Xms"
+    line: "-Xms{{ es_heap_size }}"
+
+- name: Adjust JVM max heap size
+  lineinfile:
+    path: /etc/elasticsearch/jvm.options
+    regexp: "^-Xmx"
+    line: "-Xmx{{ es_heap_size }}"
+
+- name: Adjust Kibana base path
+  lineinfile:
+    path: /etc/kibana/ki
+    regexp: '^server.basePath: '
+    line: 'server.basePath: "/kibana"'
+
+- name: Enable and start services
+  systemd:
+    name: "{{ item }}"
+    state: started
+    enabed: yes
+  with_items:
+    - elasticsearch
+    - kibana

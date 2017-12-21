@@ -1,0 +1,7 @@
+es_version: "6.1.1"
+es_deb_url: "https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-{{ es_version }}.deb"
+
+kibana_version: "6.1.1"
+kibana_deb_url: "https://artifacts.elastic.co/downloads/kibana/kibana-{{ kibana_version }}-amd64.deb"
+
+es_heap_size: 128m

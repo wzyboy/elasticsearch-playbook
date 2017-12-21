@@ -1,0 +1,58 @@
+{
+  "description": "Pipeline for parsing Nginx access logs.",
+  "processors": [
+    {
+      "grok": {
+        "field": "message",
+        "patterns": [
+          "%{IP:nginx.access.remote_addr} - %{DATA:nginx.access.remote_user} \\[%{HTTPDATE:nginx.access.time_local}\\] \"%{DATA:nginx.access.request}\" %{NUMBER:nginx.access.status} %{NUMBER:nginx.access.bytes_sent} \"%{DATA:nginx.access.http_referrer}\" \"%{DATA:nginx.access.http_user_agent}\"( \"%{DATA:nginx.access._kvs}\")?"
+        ],
+        "ignore_missing": true
+      }
+    },
+    {
+      "remove": {
+        "field": "message"
+      }
+    },
+    {
+      "rename": {
+        "field": "@timestamp",
+        "target_field": "read_timestamp"
+      }
+    },
+    {
+      "date": {
+        "field": "nginx.access.time_local",
+        "target_field": "@timestamp",
+        "formats": [
+          "dd/MMM/YYYY:H:m:s Z"
+        ]
+      }
+    },
+    {
+      "kv": {
+        "field": "nginx.access._kvs",
+        "field_split": "\\|",
+        "value_split": "=",
+        "target_field": "nginx.access",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "remove": {
+        "field": "nginx.access._kvs",
+        "ignore_failure": true
+      }
+    }
+  ],
+  "on_failure": [
+    {
+      "set": {
+        "field": "error.message",
+        "value": "{{ _ingest.on_failure_message }}"
+      }
+    }
+  ]
+}
