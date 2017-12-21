@@ -1,0 +1,16 @@
+- name: Install Elasticsearch
+  hosts: all
+  remote_user: root
+  #remote_user: debian
+  #become: yes
+
+  vars:
+    - es_heap_size: 128m
+
+  roles:
+    - role: filebeat
+    - role: elasticsearch
+    - role: kibana
+
+    # Edit ./roles/oauth2_proxy/templates/oauth2_proxy.cfg.j2 before enabling this role
+    #- role: oauth2_proxy
